@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Us · You &amp; Me</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,600&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+  <div id="navRoot"></div>
+
+  <main class="page">
+    <div class="page-header">
+      <h1>Us</h1>
+      <p>All about us</p>
+    </div>
+
+    <div class="page-inner">
+      <!-- Profile cards rendered by js/us.js -->
+      <div class="profiles" id="profilesRoot">
+        <p class="empty-state">Loading&hellip;</p>
+      </div>
+
+      <!-- Love notes carousel -->
+      <div class="love-notes">
+        <h2>Things I love about you</h2>
+        <div class="love-notes-body">
+          <button class="love-note-arrow" id="prevNote" aria-label="Previous note">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+          </button>
+          <div class="love-note-content" id="loveNoteContent">
+            <p class="love-note-number">#&mdash;</p>
+            <p class="love-note-text">Loading&hellip;</p>
+          </div>
+          <button class="love-note-arrow" id="nextNote" aria-label="Next note">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/nav.js"></script>
+  <script src="../js/supabase-client.js"></script>
+  <script src="../js/us.js"></script>
+</body>
+</html>

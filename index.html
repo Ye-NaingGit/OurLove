@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>You &amp; Me</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,600&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Nav (heart toggle + floating hearts + panel) is injected by js/nav.js -->
+  <div id="navRoot"></div>
+
+  <main class="stage">
+    <section class="card">
+
+      <div class="heart-frame">
+        <svg viewBox="0 0 300 270" class="heart-outline heart-outline--outer" preserveAspectRatio="xMidYMid meet">
+          <path d="M150,255 C150,255 20,175 20,90 C20,45 55,15 95,15 C120,15 140,30 150,55 C160,30 180,15 205,15 C245,15 280,45 280,90 C280,175 150,255 150,255 Z"/>
+        </svg>
+        <svg viewBox="0 0 300 270" class="heart-outline heart-outline--inner" preserveAspectRatio="xMidYMid meet">
+          <path d="M150,255 C150,255 20,175 20,90 C20,45 55,15 95,15 C120,15 140,30 150,55 C160,30 180,15 205,15 C245,15 280,45 280,90 C280,175 150,255 150,255 Z"/>
+        </svg>
+
+        <div class="photo-frame">
+          <img src="assets/photos/us.jpg" alt="Photo of the two of us" onerror="this.src='https://placehold.co/300x300/e8b4c0/4a1f2b?text=You+%26+Me'">
+        </div>
+      </div>
+
+      <p class="eyebrow">You &amp; Me</p>
+      <p class="since">&ldquo;Since 6 June 2025&rdquo;</p>
+      <p class="counter"><span id="dayCount">0</span> Days Together</p>
+
+      <div class="people">
+        <div class="person">
+          <div class="avatar"><img src="assets/photos/person1.jpg" alt="" onerror="this.src='https://placehold.co/208x208/f4dde5/4a1f2b?text=%F0%9F%91%A4'"></div>
+          <p class="person-name">Ye Naing</p>
+        </div>
+        <div class="person">
+          <div class="avatar"><img src="assets/photos/person2.jpg" alt="" onerror="this.src='https://placehold.co/208x208/f4dde5/4a1f2b?text=%F0%9F%91%A4'"></div>
+          <p class="person-name">Thaddar Ye Naing Khit</p>
+        </div>
+      </div>
+
+      <p class="quote">If there are thousands of paths ahead of me without you and Only one with you, I would only choose the one that is with you.</p>
+
+      <a href="pages/memories.html" class="cta">Our Memories</a>
+
+    </section>
+  </main>
+
+  <script src="js/nav.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

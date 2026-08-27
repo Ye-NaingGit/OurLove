@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gallery · You &amp; Me</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,600&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+  <div id="navRoot"></div>
+
+  <main class="page">
+    <div class="page-header">
+      <h1>Gallery</h1>
+      <p>The collection of our moments</p>
+    </div>
+
+    <div class="page-inner" id="galleryRoot">
+      <p class="empty-state">Loading gallery&hellip;</p>
+    </div>
+  </main>
+
+  <div class="fab-stack">
+    <button class="fab" id="openUpload" aria-label="Upload media">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>
+    </button>
+    <button class="fab fab-secondary" id="toggleDeleteMode" aria-label="Select media to delete">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+    </button>
+  </div>
+
+  <!-- Hidden native file input, triggered by the upload FAB -->
+  <input type="file" id="uploadInput" accept="image/*,video/*" multiple style="display:none;">
+
+  <!-- Appears once you're in delete-selection mode and have picked at least one item -->
+  <div class="selection-bar" id="selectionBar">
+    <span id="selectionCount">0 selected</span>
+    <button type="button" class="btn btn-secondary" id="cancelSelection">Cancel</button>
+    <button type="button" class="btn btn-danger" id="confirmDeleteSelection">Delete</button>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/nav.js"></script>
+  <script src="../js/supabase-client.js"></script>
+  <script src="../js/gallery.js"></script>
+</body>
+</html>

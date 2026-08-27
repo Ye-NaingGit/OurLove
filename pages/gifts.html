@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gifts · You &amp; Me</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,600&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+  <div id="navRoot"></div>
+
+  <main class="page">
+    <div class="page-header">
+      <h1>Gifts</h1>
+      <p>The presents we have given each other</p>
+    </div>
+
+    <div class="page-inner" id="giftsRoot">
+      <p class="empty-state">Loading gifts&hellip;</p>
+    </div>
+  </main>
+
+  <button class="fab" id="openAddGift" aria-label="Add new gift">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>
+  </button>
+
+  <div class="modal-backdrop" id="addGiftBackdrop">
+    <form class="modal" id="addGiftForm">
+      <h2 id="giftModalTitle">Add new gift</h2>
+      <input type="hidden" id="giftId">
+
+      <div class="field">
+        <label for="giftName">Title</label>
+        <input type="text" id="giftName" required>
+      </div>
+
+      <div class="field">
+        <label for="giftDate">Date</label>
+        <input type="date" id="giftDate">
+      </div>
+
+      <div class="field">
+        <label for="giftMessage">Message</label>
+        <textarea id="giftMessage" placeholder="e.g. Gift for our first anniversary"></textarea>
+      </div>
+
+      <div class="field">
+        <label for="giftBy">Given by</label>
+        <input type="text" id="giftBy" placeholder="e.g. Ye Naing">
+      </div>
+
+      <div class="field">
+        <label for="giftPhoto">Photo</label>
+        <input type="file" id="giftPhoto" accept="image/*">
+        <p class="form-note" id="giftPhotoNote" style="display:none; text-align:left;">Leave blank to keep the current photo.</p>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" id="cancelAddGift">Cancel</button>
+        <button type="button" class="btn btn-danger" id="deleteGiftBtn" style="display:none;">Delete</button>
+        <button type="submit" class="btn btn-primary" id="giftSubmitBtn">Save</button>
+      </div>
+    </form>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/nav.js"></script>
+  <script src="../js/supabase-client.js"></script>
+  <script src="../js/gifts.js"></script>
+</body>
+</html>

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Memories · You &amp; Me</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,600&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+  <div id="navRoot"></div>
+
+  <main class="page">
+    <div class="page-header">
+      <h1>Memories</h1>
+      <p>A reverse chronological timeline of our precious times</p>
+    </div>
+
+    <!-- Timeline is rendered into here by js/memories.js -->
+    <div class="page-inner" id="timelineRoot">
+      <p class="empty-state">Loading memories&hellip;</p>
+    </div>
+  </main>
+
+  <!-- Floating "add memory" button -->
+  <button class="fab" id="openAddMemory" aria-label="Add new memory" aria-haspopup="dialog">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>
+  </button>
+
+  <!-- Add memory modal -->
+  <div class="modal-backdrop" id="addMemoryBackdrop">
+    <form class="modal" id="addMemoryForm">
+      <h2 id="memoryModalTitle">Add new memory</h2>
+      <input type="hidden" id="memId">
+
+      <div class="field">
+        <label for="memTitle">Title</label>
+        <input type="text" id="memTitle" required>
+      </div>
+
+      <div class="field">
+        <label for="memDate">Date</label>
+        <input type="date" id="memDate" required>
+      </div>
+
+      <div class="field">
+        <label for="memLocation">Location (optional)</label>
+        <input type="text" id="memLocation" placeholder="e.g. Bugis">
+      </div>
+
+      <div class="field">
+        <label for="memDesc">Description</label>
+        <textarea id="memDesc" placeholder="What happened..."></textarea>
+      </div>
+
+      <div class="field">
+        <label for="memPhoto">Photo (optional)</label>
+        <input type="file" id="memPhoto" accept="image/*">
+        <p class="form-note" id="memPhotoNote" style="display:none; text-align:left; margin-top:6px;">Leave blank to keep the current photo.</p>
+      </div>
+
+      <div class="field" style="display:flex; align-items:center; gap:8px;">
+        <input type="checkbox" id="memMilestone" style="width:auto;">
+        <label for="memMilestone" style="margin:0; text-transform:none; font-weight:500;">Mark as milestone</label>
+      </div>
+
+      <p class="form-note">Saved memories appear automatically in the timeline above, sorted by date.</p>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" id="cancelAddMemory">Cancel</button>
+        <button type="submit" class="btn btn-primary" id="memorySubmitBtn">Save</button>
+      </div>
+    </form>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/nav.js"></script>
+  <script src="../js/supabase-client.js"></script>
+  <script src="../js/memories.js"></script>
+</body>
+</html>

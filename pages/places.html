@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Places · You &amp; Me</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,600&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+<!-- Leaflet: free map library, no API key needed (uses OpenStreetMap tiles) -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+  <div id="navRoot"></div>
+
+  <main class="page">
+    <div class="page-header">
+      <h1>Places</h1>
+      <p>Locations where we have been together</p>
+    </div>
+
+    <div class="page-inner">
+      <div class="places-layout">
+        <div id="map"></div>
+        <div class="unpinned-panel" id="unpinnedPanel" style="display:none;">
+          <h3>Unpinned Locations</h3>
+          <p class="unpinned-hint">Drag one onto the map to set its spot, or tap it then tap the map.</p>
+          <div id="unpinnedList"></div>
+        </div>
+      </div>
+      <p class="form-note" id="placingHint" style="display:none; margin-top:14px;">
+        Click anywhere on the map to drop a pin there.
+      </p>
+    </div>
+  </main>
+
+  <button class="fab" id="openAddPlace" aria-label="Add new place">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>
+  </button>
+
+  <!-- Add / edit place modal -->
+  <div class="modal-backdrop" id="addPlaceBackdrop">
+    <form class="modal" id="addPlaceForm">
+      <h2 id="placeModalTitle">Add new place</h2>
+      <input type="hidden" id="placeId">
+
+      <div class="field">
+        <label for="placeName">Name</label>
+        <input type="text" id="placeName" required placeholder="e.g. CapitaSpring">
+      </div>
+
+      <div class="field">
+        <label for="placeMemory">Related memory (optional)</label>
+        <select id="placeMemory">
+          <option value="">None</option>
+        </select>
+      </div>
+      <p class="form-note">The popup's photo comes from whichever memory you link here.</p>
+
+      <p class="form-note" id="coordsPreview"></p>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" id="cancelAddPlace">Cancel</button>
+        <button type="button" class="btn btn-danger" id="deletePlaceBtn" style="display:none;">Delete</button>
+        <button type="submit" class="btn btn-primary" id="placeSubmitBtn">Save</button>
+      </div>
+    </form>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="../js/nav.js"></script>
+  <script src="../js/supabase-client.js"></script>
+  <script src="../js/places.js"></script>
+</body>
+</html>

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Our Firsts · You &amp; Me</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,600&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+  <div id="navRoot"></div>
+
+  <main class="page">
+    <div class="page-header">
+      <h1>Our Firsts</h1>
+      <p>Our first-time moments</p>
+    </div>
+
+    <div class="page-inner">
+      <div class="corkboard" id="corkboardRoot">
+        <p class="empty-state" style="color:#fff;">Loading&hellip;</p>
+      </div>
+    </div>
+  </main>
+
+  <button class="fab" id="openAddFirst" aria-label="Add new first">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>
+  </button>
+
+  <div class="modal-backdrop" id="addFirstBackdrop">
+    <form class="modal" id="addFirstForm">
+      <h2 id="firstModalTitle">Add new first</h2>
+      <input type="hidden" id="firstId">
+
+      <div class="field">
+        <label for="firstTitle">Title</label>
+        <input type="text" id="firstTitle" required placeholder="e.g. First Date">
+      </div>
+
+      <div class="field">
+        <label for="firstDesc">Message</label>
+        <textarea id="firstDesc" placeholder="A note about it..."></textarea>
+      </div>
+
+      <div class="field">
+        <label for="firstMemory">Select memory (optional)</label>
+        <select id="firstMemory">
+          <option value="">None — use the fields above only</option>
+        </select>
+      </div>
+
+      <p class="form-note">Linking a memory pulls in its date and photo automatically.</p>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" id="cancelAddFirst">Cancel</button>
+        <button type="button" class="btn btn-danger" id="deleteFirstBtn" style="display:none;">Delete</button>
+        <button type="submit" class="btn btn-primary" id="firstSubmitBtn">Pin it</button>
+      </div>
+    </form>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/nav.js"></script>
+  <script src="../js/supabase-client.js"></script>
+  <script src="../js/firsts.js"></script>
+</body>
+</html>
