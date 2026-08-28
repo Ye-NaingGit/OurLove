@@ -19,7 +19,7 @@ const demoMemories = [
     description: 'Our first rings together. Gift for our first anniversary.',
     is_milestone: false,
     location_id: null,
-    media: { url: 'https://placehold.co/400x300/e8b4c0/4a1f2b?text=Our+Rings' },
+    media: { id: 'demo-media-1', url: 'https://placehold.co/400x300/e8b4c0/4a1f2b?text=Our+Rings' },
     places: { name: 'Bugis' },
   },
   {
@@ -39,7 +39,7 @@ const demoMemories = [
     description: 'One whole year with you, and still choosing you every day.',
     is_milestone: true,
     location_id: null,
-    media: { url: 'https://placehold.co/400x300/e8b4c0/4a1f2b?text=First+Anniversary' },
+    media: { id: 'demo-media-3', url: 'https://placehold.co/400x300/e8b4c0/4a1f2b?text=First+Anniversary' },
     places: null,
   },
   {
@@ -171,7 +171,7 @@ function renderTimeline(memories) {
 
 async function init() {
   const memories = await loadTable('memories', demoMemories, {
-    select: '*, media(url), places(name)',
+    select: '*, media(id, url), places(name)',
     order: 'date',
     ascending: false,
   });
@@ -187,6 +187,13 @@ const form = document.getElementById('addMemoryForm');
 const modalTitle = document.getElementById('memoryModalTitle');
 const submitBtn = document.getElementById('memorySubmitBtn');
 const photoNote = document.getElementById('memPhotoNote');
+const photoPreview = document.getElementById('memPhotoPreview');
+const photoFileInput = document.getElementById('memPhoto');
+const mediaIdField = document.getElementById('memMediaId');
+
+function setMemPhotoPreview(url) {
+  photoPreview.innerHTML = url ? `<img src="${url}" alt="">` : '';
+}
 
 // Opens the modal. Pass a memory object to pre-fill it for editing;
 // call with no argument for the normal "add new" flow.
@@ -198,6 +205,8 @@ function openMemoryModal(memory = null) {
   document.getElementById('memLocation').value = memory?.places?.name ?? '';
   document.getElementById('memDesc').value = memory?.description ?? '';
   document.getElementById('memMilestone').checked = !!memory?.is_milestone;
+  mediaIdField.value = memory?.media?.id ?? '';
+  setMemPhotoPreview(memory?.media?.url ?? null);
 
   modalTitle.textContent = memory ? 'Edit memory' : 'Add new memory';
   submitBtn.textContent = memory ? 'Update' : 'Save';
@@ -212,6 +221,25 @@ backdrop.addEventListener('click', (e) => {
   if (e.target === backdrop) backdrop.classList.remove('is-open');
 });
 
+// "Choose from gallery" opens the shared media picker; picking a photo
+// there sets the hidden media-id field directly (no upload needed) and
+// clears any file staged in the upload input, so only one wins at submit.
+document.getElementById('memChooseExisting').addEventListener('click', () => {
+  openMediaPicker(({ id, url }) => {
+    mediaIdField.value = id;
+    photoFileInput.value = '';
+    setMemPhotoPreview(url);
+  });
+});
+
+// Picking a new file to upload instead should override any gallery choice.
+photoFileInput.addEventListener('change', () => {
+  const file = photoFileInput.files[0];
+  if (!file) return;
+  mediaIdField.value = '';
+  setMemPhotoPreview(URL.createObjectURL(file));
+});
+
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
 
@@ -222,6 +250,7 @@ form.addEventListener('submit', async (e) => {
   const description = document.getElementById('memDesc').value.trim();
   const isMilestone = document.getElementById('memMilestone').checked;
   const photoFile = document.getElementById('memPhoto').files[0];
+  const chosenMediaId = document.getElementById('memMediaId').value || null;
 
   if (!title || !date) return;
 
@@ -231,6 +260,7 @@ form.addEventListener('submit', async (e) => {
       let mediaId = undefined; // undefined = don't touch the existing media_id
 
       if (photoFile) {
+        // A freshly uploaded file always wins over a gallery pick.
         const path = `memories/${Date.now()}-${photoFile.name}`;
         const { error: uploadError } = await db.storage.from('media').upload(path, photoFile);
         if (uploadError) throw uploadError;
@@ -243,6 +273,9 @@ form.addEventListener('submit', async (e) => {
           .single();
         if (mediaError) throw mediaError;
         mediaId = mediaRow.id;
+      } else if (chosenMediaId) {
+        // Picked an existing photo from the gallery — no upload needed.
+        mediaId = chosenMediaId;
       }
 
       let locationId = undefined; // undefined = don't touch existing location_id
@@ -280,7 +313,13 @@ form.addEventListener('submit', async (e) => {
     }
   } else {
     // ---- Demo fallback ----
-    const newPhoto = photoFile ? { url: URL.createObjectURL(photoFile) } : undefined;
+    // A freshly uploaded file wins; otherwise, if a gallery photo was
+    // chosen, reuse whatever the preview is currently showing (already
+    // set to that photo's URL by the picker/file-input handlers above).
+    const previewImg = photoPreview.querySelector('img');
+    const newPhoto = photoFile
+      ? { id: 'local-' + Date.now(), url: URL.createObjectURL(photoFile) }
+      : (chosenMediaId && previewImg ? { id: chosenMediaId, url: previewImg.src } : undefined);
     const newPlace = location ? { name: location } : null;
 
     if (editingId) {

@@ -23,6 +23,7 @@ const demoPlaces = [
 const demoMemoriesForPlaces = [
   { id: 'dm-1', title: 'CapitaSpring', date: '2025-04-29', location_id: 'demo-1', media: { url: 'https://placehold.co/300x200/e8b4c0/4a1f2b?text=CapitaSpring' } },
   { id: 'dm-2', title: 'Our Rings', date: '2026-07-24', location_id: 'demo-3', media: null },
+  { id: 'dm-3', title: 'Coffee Date', date: '2025-08-10', location_id: 'demo-3', media: null },
 ];
 
 let map;
@@ -46,17 +47,18 @@ function popupHtml(place) {
   const photo = place.photo_url
     ? `<img src="${place.photo_url}" alt="${place.name}">`
     : '';
-  const dateLine = place.memory_title
-    ? `<p class="place-date">${place.memory_title}</p>`
-    : '';
-  const link = place.has_memory
-    ? `<a href="memories.html">See the memory &rarr;</a>`
+  const memories = place.linked_memories || [];
+  const memoryLines = memories
+    .map((m) => `<p class="place-date">${m.title} (${formatDate(m.date)})</p>`)
+    .join('');
+  const link = memories.length
+    ? `<a href="memories.html">See ${memories.length > 1 ? 'these memories' : 'the memory'} &rarr;</a>`
     : '';
   return `
     <div class="place-popup" data-place-id="${place.id}">
       ${photo}
       <p class="place-name">${place.name}</p>
-      ${dateLine}
+      ${memoryLines}
       ${link}
       <div class="popup-actions">
         <button type="button" class="popup-edit" data-id="${place.id}">Edit</button>
@@ -113,24 +115,24 @@ function renderUnpinnedPanel(places) {
   });
 }
 
-// Combines places with the memory (if any) that links to them, so the
-// popup can show a photo/date without the `places` table needing its
-// own media column.
+// Combines places with every memory that links to them, so the popup
+// can show photos/dates without the `places` table needing its own
+// media column. A place can have any number of linked memories.
 function attachMemoryInfo(places, memories) {
-  const memoryByLocationId = new Map();
+  const memoriesByLocationId = new Map();
   memories.forEach((m) => {
-    if (m.location_id && !memoryByLocationId.has(m.location_id)) {
-      memoryByLocationId.set(m.location_id, m);
-    }
+    if (!m.location_id) return;
+    if (!memoriesByLocationId.has(m.location_id)) memoriesByLocationId.set(m.location_id, []);
+    memoriesByLocationId.get(m.location_id).push(m);
   });
 
   return places.map((p) => {
-    const memory = memoryByLocationId.get(p.id);
+    const linked = memoriesByLocationId.get(p.id) || [];
+    const withPhoto = linked.find((m) => m.media?.url);
     return {
       ...p,
-      has_memory: !!memory,
-      photo_url: memory?.media?.url ?? null,
-      memory_title: memory ? `${memory.title} (${formatDate(memory.date)})` : null,
+      linked_memories: linked,
+      photo_url: withPhoto?.media?.url ?? null,
     };
   });
 }
@@ -172,6 +174,7 @@ async function initMap() {
     }
     if (placingMode) {
       pendingLatLng = e.latlng;
+      resetPlaceModalForCreate();
       document.getElementById('coordsPreview').textContent =
         `Pin location: ${e.latlng.lat.toFixed(4)}, ${e.latlng.lng.toFixed(4)}`;
       document.getElementById('addPlaceBackdrop').classList.add('is-open');
@@ -237,18 +240,24 @@ function setPlacingMode(on, hintText) {
 
 initMap();
 
-// Populate the "related memory" dropdown.
-async function populateMemoryDropdown(selectedId) {
+// Populates the "related memories" checklist, checking off whichever
+// memories are already linked to this place (selectedIds is an array —
+// a place can now link any number of memories).
+async function populateMemoryChecklist(selectedIds = []) {
   const memories = await loadTable('memories', demoMemoriesForPlaces, { select: 'id, title', order: 'date', ascending: false });
-  const select = document.getElementById('placeMemory');
-  select.innerHTML = '<option value="">None</option>';
-  memories.forEach((m) => {
-    const opt = document.createElement('option');
-    opt.value = m.id;
-    opt.textContent = m.title;
-    if (m.id === selectedId) opt.selected = true;
-    select.appendChild(opt);
-  });
+  const container = document.getElementById('placeMemoryChecklist');
+
+  if (!memories.length) {
+    container.innerHTML = '<p class="form-note" style="margin:0;">No memories yet.</p>';
+    return;
+  }
+
+  container.innerHTML = memories.map((m) => `
+    <label class="checklist-item">
+      <input type="checkbox" value="${m.id}" ${selectedIds.includes(m.id) ? 'checked' : ''}>
+      <span>${m.title}</span>
+    </label>
+  `).join('');
 }
 
 // ---- Add / edit place modal ------------------------------------------------
@@ -270,9 +279,9 @@ async function openPlaceModal(place) {
   document.getElementById('coordsPreview').textContent =
     `Current location: ${Number(place.latitude).toFixed(4)}, ${Number(place.longitude).toFixed(4)}`;
 
-  const linkedMemory = (await loadTable('memories', demoMemoriesForPlaces, { select: 'id, title, location_id' }))
-    .find((m) => m.location_id === place.id);
-  await populateMemoryDropdown(linkedMemory?.id ?? null);
+  const allMemories = await loadTable('memories', demoMemoriesForPlaces, { select: 'id, title, location_id' });
+  const linkedIds = allMemories.filter((m) => m.location_id === place.id).map((m) => m.id);
+  await populateMemoryChecklist(linkedIds);
 
   modalTitle.textContent = 'Edit place';
   submitBtn.textContent = 'Update';
@@ -280,6 +289,18 @@ async function openPlaceModal(place) {
   pendingLatLng = null; // editing uses the place's existing coords, not a fresh click
 
   backdrop.classList.add('is-open');
+}
+
+// Resets the modal to a blank "add new place" state — used right before
+// showing it after a map click, so it never carries over a previous
+// edit's title/fields.
+function resetPlaceModalForCreate() {
+  form.reset();
+  document.getElementById('placeId').value = '';
+  modalTitle.textContent = 'Add new place';
+  submitBtn.textContent = 'Save';
+  deleteBtn.style.display = 'none';
+  populateMemoryChecklist([]);
 }
 
 openBtn.addEventListener('click', () => {
@@ -298,7 +319,9 @@ form.addEventListener('submit', async (e) => {
 
   const editingId = document.getElementById('placeId').value || null;
   const name = document.getElementById('placeName').value.trim();
-  const memoryId = document.getElementById('placeMemory').value || null;
+  const selectedMemoryIds = Array.from(
+    document.querySelectorAll('#placeMemoryChecklist input:checked')
+  ).map((cb) => cb.value);
   if (!name) return;
   if (!editingId && !pendingLatLng) return; // shouldn't happen, but guards against a stray submit
 
@@ -316,28 +339,34 @@ form.addEventListener('submit', async (e) => {
         placeId = newPlace.id;
       }
 
-      // Unlink any memory that previously pointed here, then link the
-      // newly chosen one (if any) — keeps the reverse-lookup consistent.
-      await db.from('memories').update({ location_id: null }).eq('location_id', placeId);
-      if (memoryId) {
-        await db.from('memories').update({ location_id: placeId }).eq('id', memoryId);
-      }
+      // Reconcile against whichever memories are currently linked: unlink
+      // any that were unchecked, link any newly checked ones. This is what
+      // lets one place have several memories instead of just one.
+      const { data: currentlyLinked } = await db.from('memories').select('id').eq('location_id', placeId);
+      const currentlyLinkedIds = (currentlyLinked || []).map((m) => m.id);
+
+      const toUnlink = currentlyLinkedIds.filter((id) => !selectedMemoryIds.includes(id));
+      const toLink = selectedMemoryIds.filter((id) => !currentlyLinkedIds.includes(id));
+
+      if (toUnlink.length) await db.from('memories').update({ location_id: null }).in('id', toUnlink);
+      if (toLink.length) await db.from('memories').update({ location_id: placeId }).in('id', toLink);
     } catch (err) {
       alert('Could not save to Supabase: ' + err.message);
       return;
     }
   } else {
+    let placeId = editingId;
     if (editingId) {
       const place = demoPlaces.find((p) => p.id === editingId);
       if (place) place.name = name;
     } else {
-      demoPlaces.push({ id: 'local-' + Date.now(), name, latitude: pendingLatLng.lat, longitude: pendingLatLng.lng });
+      placeId = 'local-' + Date.now();
+      demoPlaces.push({ id: placeId, name, latitude: pendingLatLng.lat, longitude: pendingLatLng.lng });
     }
-    demoMemoriesForPlaces.forEach((m) => { if (m.location_id === editingId) m.location_id = null; });
-    if (memoryId) {
-      const m = demoMemoriesForPlaces.find((mm) => mm.id === memoryId);
-      if (m) m.location_id = editingId || 'local-' + Date.now();
-    }
+    demoMemoriesForPlaces.forEach((m) => {
+      if (selectedMemoryIds.includes(m.id)) m.location_id = placeId;
+      else if (m.location_id === placeId) m.location_id = null;
+    });
   }
 
   form.reset();

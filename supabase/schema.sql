@@ -187,3 +187,23 @@ insert into love_notes (number, description) values
 create policy "public delete - media bucket"
   on storage.objects for delete
   using (bucket_id = 'media');
+
+
+-- ============================================================
+-- MIGRATION 2 — added for the Home/Us page photo picker.
+--
+-- Run just this block (not the whole file) in the SQL Editor.
+-- The `us` table already has a photo_id column for each person's
+-- own photo — this adds one more place to store the single
+-- shared "You & Me" couple photo on the Home page.
+-- ============================================================
+create table settings (
+  id boolean primary key default true,
+  couple_photo_id uuid references media(id) on delete set null,
+  constraint settings_singleton check (id = true) -- only ever one row
+);
+
+alter table settings enable row level security;
+create policy "public read/write - settings" on settings for all using (true) with check (true);
+
+insert into settings (id) values (true);

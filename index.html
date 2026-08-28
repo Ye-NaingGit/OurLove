@@ -25,8 +25,9 @@
           <path d="M150,255 C150,255 20,175 20,90 C20,45 55,15 95,15 C120,15 140,30 150,55 C160,30 180,15 205,15 C245,15 280,45 280,90 C280,175 150,255 150,255 Z"/>
         </svg>
 
-        <div class="photo-frame">
-          <img src="assets/photos/us.jpg" alt="Photo of the two of us" onerror="this.src='https://placehold.co/300x300/e8b4c0/4a1f2b?text=You+%26+Me'">
+        <div class="photo-frame photo-editable" id="couplePhotoFrame">
+          <img id="couplePhotoImg" src="" alt="Photo of the two of us">
+          <span class="photo-edit-icon"><svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2Z"/><circle cx="12" cy="13" r="4"/></svg></span>
         </div>
       </div>
 
@@ -36,23 +37,33 @@
 
       <div class="people">
         <div class="person">
-          <div class="avatar"><img src="assets/photos/person1.jpg" alt="" onerror="this.src='https://placehold.co/208x208/f4dde5/4a1f2b?text=%F0%9F%91%A4'"></div>
+          <div class="avatar photo-editable" id="person1Avatar">
+            <img id="person1Img" src="" alt="Ye Naing">
+            <span class="photo-edit-icon"><svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2Z"/><circle cx="12" cy="13" r="4"/></svg></span>
+          </div>
           <p class="person-name">Ye Naing</p>
         </div>
         <div class="person">
-          <div class="avatar"><img src="assets/photos/person2.jpg" alt="" onerror="this.src='https://placehold.co/208x208/f4dde5/4a1f2b?text=%F0%9F%91%A4'"></div>
+          <div class="avatar photo-editable" id="person2Avatar">
+            <img id="person2Img" src="" alt="Thaddar Ye Naing Khit">
+            <span class="photo-edit-icon"><svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2Z"/><circle cx="12" cy="13" r="4"/></svg></span>
+          </div>
           <p class="person-name">Thaddar Ye Naing Khit</p>
         </div>
       </div>
 
-      <p class="quote">If there are thousands of paths ahead of me without you and Only one with you, I would only choose the one that is with you.</p>
+      <p class="quote">Even if there are thousands of paths ahead of me, I would only choose the ones that are with you.</p>
 
       <a href="pages/memories.html" class="cta">Our Memories</a>
 
     </section>
   </main>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/nav.js"></script>
+  <script src="js/supabase-client.js"></script>
+  <script src="js/media-picker.js"></script>
   <script src="js/main.js"></script>
+  <script src="js/home-photos.js"></script>
 </body>
 </html>

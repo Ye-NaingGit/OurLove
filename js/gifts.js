@@ -7,9 +7,9 @@
 
 // ---- Demo data ------------------------------------------------------
 const demoGifts = [
-  { id: 'demo-1', name: 'Our Rings', date: '2026-07-24', message: 'Our first rings together. Gift for our first anniversary.', given_by: 'Ye Naing', media: { url: 'https://placehold.co/400x300/e8b4c0/4a1f2b?text=Our+Rings' } },
-  { id: 'demo-2', name: 'Sony Earphone', date: '2026-02-14', message: 'For your commute playlists.', given_by: 'Thaddar', media: { url: 'https://placehold.co/400x300/e8b4c0/4a1f2b?text=Sony+Earphone' } },
-  { id: 'demo-3', name: 'Lipstick', date: '2025-12-25', message: 'Your favorite shade.', given_by: 'Ye Naing', media: { url: 'https://placehold.co/400x300/e8b4c0/4a1f2b?text=Lipstick' } },
+  { id: 'demo-1', name: 'Our Rings', date: '2026-07-24', message: 'Our first rings together. Gift for our first anniversary.', given_by: 'Ye Naing', media: { id: 'demo-media-1', url: 'https://placehold.co/400x300/e8b4c0/4a1f2b?text=Our+Rings' } },
+  { id: 'demo-2', name: 'Sony Earphone', date: '2026-02-14', message: 'For your commute playlists.', given_by: 'Thaddar', media: { id: 'demo-media-2', url: 'https://placehold.co/400x300/e8b4c0/4a1f2b?text=Sony+Earphone' } },
+  { id: 'demo-3', name: 'Lipstick', date: '2025-12-25', message: 'Your favorite shade.', given_by: 'Ye Naing', media: { id: 'demo-media-3', url: 'https://placehold.co/400x300/e8b4c0/4a1f2b?text=Lipstick' } },
 ];
 
 const giftsRoot = document.getElementById('giftsRoot');
@@ -100,7 +100,7 @@ function renderGifts(gifts) {
 }
 
 async function init() {
-  const gifts = await loadTable('gifts', demoGifts, { select: '*, media(url)', order: 'date', ascending: false });
+  const gifts = await loadTable('gifts', demoGifts, { select: '*, media(id, url)', order: 'date', ascending: false });
   renderGifts(gifts);
 }
 init();
@@ -114,6 +114,13 @@ const modalTitle = document.getElementById('giftModalTitle');
 const submitBtn = document.getElementById('giftSubmitBtn');
 const photoNote = document.getElementById('giftPhotoNote');
 const deleteBtn = document.getElementById('deleteGiftBtn');
+const photoPreview = document.getElementById('giftPhotoPreview');
+const photoFileInput = document.getElementById('giftPhoto');
+const mediaIdField = document.getElementById('giftMediaId');
+
+function setGiftPhotoPreview(url) {
+  photoPreview.innerHTML = url ? `<img src="${url}" alt="">` : '';
+}
 
 function openGiftModal(gift = null) {
   form.reset();
@@ -122,6 +129,8 @@ function openGiftModal(gift = null) {
   document.getElementById('giftDate').value = gift?.date ?? '';
   document.getElementById('giftMessage').value = gift?.message ?? '';
   document.getElementById('giftBy').value = gift?.given_by ?? '';
+  mediaIdField.value = gift?.media?.id ?? '';
+  setGiftPhotoPreview(gift?.media?.url ?? null);
 
   modalTitle.textContent = gift ? 'Edit gift' : 'Add new gift';
   submitBtn.textContent = gift ? 'Update' : 'Save';
@@ -135,6 +144,21 @@ openBtn.addEventListener('click', () => openGiftModal());
 cancelBtn.addEventListener('click', () => backdrop.classList.remove('is-open'));
 backdrop.addEventListener('click', (e) => { if (e.target === backdrop) backdrop.classList.remove('is-open'); });
 
+document.getElementById('giftChooseExisting').addEventListener('click', () => {
+  openMediaPicker(({ id, url }) => {
+    mediaIdField.value = id;
+    photoFileInput.value = '';
+    setGiftPhotoPreview(url);
+  });
+});
+
+photoFileInput.addEventListener('change', () => {
+  const file = photoFileInput.files[0];
+  if (!file) return;
+  mediaIdField.value = '';
+  setGiftPhotoPreview(URL.createObjectURL(file));
+});
+
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
 
@@ -144,6 +168,7 @@ form.addEventListener('submit', async (e) => {
   const message = document.getElementById('giftMessage').value.trim();
   const givenBy = document.getElementById('giftBy').value.trim();
   const photoFile = document.getElementById('giftPhoto').files[0];
+  const chosenMediaId = document.getElementById('giftMediaId').value || null;
   if (!name) return;
 
   if (db) {
@@ -157,6 +182,8 @@ form.addEventListener('submit', async (e) => {
         const { data: mediaRow, error: mediaError } = await db.from('media').insert({ title: name, url: publicUrlData.publicUrl }).select().single();
         if (mediaError) throw mediaError;
         mediaId = mediaRow.id;
+      } else if (chosenMediaId) {
+        mediaId = chosenMediaId;
       }
 
       const payload = { name, date, message, given_by: givenBy };
@@ -174,7 +201,10 @@ form.addEventListener('submit', async (e) => {
       return;
     }
   } else {
-    const newPhoto = photoFile ? { url: URL.createObjectURL(photoFile) } : undefined;
+    const previewImg = photoPreview.querySelector('img');
+    const newPhoto = photoFile
+      ? { id: 'local-' + Date.now(), url: URL.createObjectURL(photoFile) }
+      : (chosenMediaId && previewImg ? { id: chosenMediaId, url: previewImg.src } : undefined);
     if (editingId) {
       const existing = demoGifts.find((g) => g.id === editingId);
       if (existing) {

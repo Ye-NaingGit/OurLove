@@ -4,12 +4,14 @@
 :root {
   --rose-deep:    #7A2E42;   /* headings / strong text on light */
   --rose-mid:     #A85C74;   /* mid accents */
-  --rose-bg:      #C48A9C;   /* page background */
-  --rose-bg-2:    #B87A8F;   /* gradient partner */
+  --rose-bg:      #F6D8E2;   /* page background */
+  --rose-bg-2:    #FBEDF2;   /* gradient partner */
   --rose-bright:  #E8637A;   /* heart line / accent */
-  --blush-panel:  #F1D3DC;   /* nav panel */
-  --cream:        #FBF0EC;   /* light text */
-  --cream-dim:    #F1DCE1;   /* secondary light text */
+  --blush-panel:  #F1D3DC;   /* floating surfaces: modal, fab, selection bar */
+  --nav-color:    #C9607F;   /* nav toggle + panel — distinct "vibe" accent */
+  --nav-color-deep: #A94764; /* nav open/hover state */
+  --cream:        #FBF0EC;   /* light text, used on dark/colored surfaces */
+  --cream-dim:    #F1DCE1;   /* secondary light text, used on dark/colored surfaces */
   --plum-shadow:  rgba(74, 20, 33, 0.35);
 
   --font-display: 'Playfair Display', Georgia, serif;
@@ -26,8 +28,8 @@ html, body {
 
 body {
   font-family: var(--font-body);
-  background: radial-gradient(120% 120% at 50% -10%, var(--rose-bg-2) 0%, var(--rose-bg) 55%, #B07186 100%);
-  color: var(--cream);
+  background: radial-gradient(120% 120% at 50% -10%, var(--rose-bg-2) 0%, var(--rose-bg) 100%);
+  color: var(--rose-deep);
   min-height: 100vh;
   overflow-x: hidden;
   position: relative;
@@ -54,7 +56,7 @@ body {
 .floaty {
   position: absolute;
   bottom: -10%;
-  color: rgba(251, 240, 236, 0.16);
+  color: rgba(122, 46, 66, 0.16);
   font-size: 1.4rem;
   animation: floatUp 18s linear infinite;
 }
@@ -81,8 +83,8 @@ body {
   height: 46px;
   border-radius: 50%;
   border: none;
-  background: rgba(251, 240, 236, 0.14);
-  backdrop-filter: blur(6px);
+  background: var(--nav-color);
+  box-shadow: 0 8px 20px var(--plum-shadow);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -99,20 +101,16 @@ body {
   width: 22px;
   height: 22px;
   fill: var(--cream);
-  transition: fill 0.2s ease;
 }
 .nav-toggle[aria-expanded="true"] {
-  background: var(--blush-panel);
-}
-.nav-toggle[aria-expanded="true"] .heart-icon {
-  fill: var(--rose-deep);
+  background: var(--nav-color-deep);
 }
 
 .site-nav {
   position: fixed;
   top: 24px;
   left: 24px;
-  background: var(--blush-panel);
+  background: var(--nav-color);
   border-radius: 26px;
   padding: 70px 10px 18px;
   width: 190px;
@@ -133,20 +131,20 @@ body {
   transform: translateY(0) scale(1);
 }
 .site-nav a {
-  color: var(--rose-deep);
+  color: var(--cream);
   text-decoration: none;
   font-weight: 600;
   font-size: 0.95rem;
   text-align: center;
   padding: 9px 14px;
-  border-bottom: 1px solid rgba(122, 46, 66, 0.18);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.22);
   opacity: 0;
   transform: translateY(-6px);
   transition: opacity 0.25s ease, transform 0.25s ease, background 0.2s ease;
 }
 .site-nav a:last-child { border-bottom: none; }
 .site-nav a:hover, .site-nav a.active {
-  background: rgba(122, 46, 66, 0.10);
+  background: rgba(255, 255, 255, 0.18);
   border-radius: 12px;
 }
 .site-nav.is-open a {
@@ -237,7 +235,7 @@ body {
   border-radius: 18px;
   overflow: hidden;
   box-shadow: 0 10px 28px var(--plum-shadow);
-  border: 3px solid rgba(251, 240, 236, 0.85);
+  border: 3px solid rgba(122, 46, 66, 0.85);
 }
 .photo-frame img {
   width: 100%;
@@ -251,14 +249,14 @@ body {
   font-size: 1.9rem;
   font-weight: 600;
   margin: 6px 0 3px;
-  color: var(--cream);
+  color: var(--rose-deep);
 }
 .since {
   font-family: var(--font-display);
   font-style: italic;
   font-size: 1.2rem;
   margin: 0 0 8px;
-  color: var(--cream-dim);
+  color: var(--rose-mid);
 }
 .counter {
   font-weight: 600;
@@ -285,11 +283,11 @@ body {
   height: 104px;
   border-radius: 50%;
   overflow: hidden;
-  border: 3px solid rgba(251, 240, 236, 0.7);
-  background: rgba(251, 240, 236, 0.15);
+  border: 3px solid rgba(122, 46, 66, 0.7);
+  background: rgba(122, 46, 66, 0.15);
 }
 .avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.person-name { margin: 0; font-size: 1.05rem; font-weight: 500; color: var(--cream-dim); }
+.person-name { margin: 0; font-size: 1.05rem; font-weight: 500; color: var(--rose-mid); }
 
 .quote {
   font-family: var(--font-display);
@@ -298,17 +296,17 @@ body {
   line-height: 1.6;
   max-width: 440px;
   margin: 0 0 38px;
-  color: var(--cream);
+  color: var(--rose-deep);
 }
 
 .cta {
-  color: var(--cream);
+  color: var(--rose-deep);
   font-weight: 600;
   font-size: 1.1rem;
   letter-spacing: 0.02em;
   text-decoration: underline;
   text-underline-offset: 5px;
-  text-decoration-color: rgba(251, 240, 236, 0.6);
+  text-decoration-color: rgba(122, 46, 66, 0.6);
   transition: opacity 0.2s ease;
 }
 .cta:hover { opacity: 0.75; }
@@ -345,12 +343,12 @@ body {
   font-weight: 700;
   margin: 0 0 10px;
   display: inline-block;
-  border-bottom: 3px solid var(--cream);
+  border-bottom: 3px solid var(--rose-deep);
   padding-bottom: 8px;
 }
 .page-header p {
   margin: 0;
-  color: var(--cream-dim);
+  color: var(--rose-mid);
   font-size: 1.05rem;
 }
 .page-inner {
@@ -474,7 +472,7 @@ body {
 
 .empty-state {
   text-align: center;
-  color: var(--cream-dim);
+  color: var(--rose-mid);
   padding: 60px 20px;
   font-style: italic;
 }
@@ -486,7 +484,7 @@ body {
   font-family: var(--font-display);
   font-size: 2.4rem;
   font-weight: 700;
-  color: rgba(251, 240, 236, 0.35);
+  color: rgba(122, 46, 66, 0.35);
   margin: 50px 0 20px;
 }
 .timeline-year:first-child { margin-top: 0; }
@@ -494,7 +492,7 @@ body {
 /* Memories page specifically: year is centered on the spine. */
 #timelineRoot .timeline-year {
   text-align: center;
-  color: rgba(251, 240, 236, 0.55);
+  color: rgba(122, 46, 66, 0.55);
   margin: 60px 0 30px;
   position: relative;
   z-index: 1;
@@ -513,7 +511,7 @@ body {
   bottom: 8px;
   left: 50%;
   width: 2px;
-  background: rgba(251, 240, 236, 0.28);
+  background: rgba(122, 46, 66, 0.28);
   transform: translateX(-50%);
   z-index: 0;
 }
@@ -567,7 +565,7 @@ body {
   right: 100%;
   width: 22px;
   height: 1px;
-  background: rgba(251, 240, 236, 0.4);
+  background: rgba(122, 46, 66, 0.4);
 }
 .timeline-row.align-left .timeline-date::after {
   content: '';
@@ -576,12 +574,12 @@ body {
   left: 100%;
   width: 22px;
   height: 1px;
-  background: rgba(251, 240, 236, 0.4);
+  background: rgba(122, 46, 66, 0.4);
 }
 
 .memory-card {
-  background: rgba(251, 240, 236, 0.14);
-  border: 1px solid rgba(251, 240, 236, 0.25);
+  background: rgba(122, 46, 66, 0.14);
+  border: 1px solid rgba(122, 46, 66, 0.25);
   border-radius: 18px;
   width: 220px;
   overflow: hidden;
@@ -651,7 +649,7 @@ body {
 .memory-card.is-open {
   transform: translateY(-4px);
   box-shadow: 0 16px 34px var(--plum-shadow);
-  background: rgba(251, 240, 236, 0.22);
+  background: rgba(122, 46, 66, 0.22);
 }
 .memory-card .memory-details {
   max-height: 0;
@@ -682,7 +680,7 @@ body {
 .timeline-date {
   font-weight: 700;
   font-size: 1.05rem;
-  color: var(--cream);
+  color: var(--rose-deep);
   white-space: nowrap;
   padding: 0 14px;
   flex-shrink: 0;
@@ -1028,8 +1026,8 @@ body {
 .love-notes {
   max-width: 460px;
   margin: 0 auto;
-  background: rgba(251, 240, 236, 0.12);
-  border: 2px solid var(--cream);
+  background: rgba(122, 46, 66, 0.12);
+  border: 2px solid var(--rose-deep);
   border-radius: 22px;
   padding: 34px 30px;
   text-align: center;
@@ -1039,6 +1037,7 @@ body {
   font-size: 1.4rem;
   text-decoration: underline;
   margin: 0 0 22px;
+  color: var(--cream);
 }
 .love-notes-body {
   display: flex;
@@ -1064,6 +1063,7 @@ body {
   font-weight: 700;
   font-size: 1.1rem;
   margin: 0 0 8px;
+  color: var(--cream);
 }
 .love-note-content .love-note-text {
   font-family: var(--font-display);
@@ -1137,6 +1137,10 @@ body {
   gap: 14px;
   padding: 0 14px 14px;
 }
+/* gift-box-inner has a white/cream fill (unlike memory-card's dark
+   translucent one), so Edit/Delete need the dark variant here. */
+.gift-actions .card-action-btn { color: var(--rose-deep); }
+.gift-actions .card-action-danger { color: #B33A50; }
 
 /* =============================================================
    Places — unpinned locations side panel + drag-to-place
@@ -1150,8 +1154,8 @@ body {
 .unpinned-panel {
   width: 220px;
   flex-shrink: 0;
-  background: rgba(251, 240, 236, 0.14);
-  border: 1px solid rgba(251, 240, 236, 0.25);
+  background: rgba(122, 46, 66, 0.14);
+  border: 1px solid rgba(122, 46, 66, 0.25);
   border-radius: 16px;
   padding: 16px;
   max-height: 60vh;
@@ -1300,3 +1304,125 @@ body {
 }
 .notebook.erase-mode .plan-line .erase-icon { opacity: 0.55; }
 .notebook.erase-mode .plan-line:hover .erase-icon { opacity: 1; }
+
+/* =============================================================
+   Media picker modal (Home + Us profile/couple photos)
+============================================= */
+.media-picker-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  max-height: 340px;
+  overflow-y: auto;
+  margin-bottom: 16px;
+}
+.media-picker-item {
+  border: none;
+  padding: 0;
+  border-radius: 10px;
+  overflow: hidden;
+  cursor: pointer;
+  aspect-ratio: 1;
+  background: none;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.media-picker-item:hover {
+  transform: scale(1.04);
+  box-shadow: 0 6px 16px rgba(74, 20, 33, 0.35);
+}
+.media-picker-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+/* Clickable photo affordance: a soft camera-icon overlay on hover,
+   used on the Home page's couple/person photos and the Us page's
+   profile avatars. */
+.photo-editable {
+  position: relative;
+  cursor: pointer;
+}
+.photo-editable::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: rgba(74, 20, 33, 0.45);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  display: flex;
+}
+.photo-editable .photo-edit-icon {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 26px;
+  height: 26px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+}
+.photo-editable .photo-edit-icon svg { width: 100%; height: 100%; stroke: var(--cream); fill: none; }
+.photo-editable:hover::after,
+.photo-editable:hover .photo-edit-icon {
+  opacity: 1;
+}
+
+/* =============================================================
+   Photo picker row (Memories/Gifts modals): preview thumbnail +
+   "choose from gallery" / "upload new" side by side.
+============================================= */
+.photo-picker-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+.photo-picker-preview {
+  width: 64px;
+  height: 64px;
+  border-radius: 10px;
+  overflow: hidden;
+  background: rgba(122, 46, 66, 0.08);
+  border: 1px dashed rgba(122, 46, 66, 0.3);
+  flex-shrink: 0;
+}
+.photo-picker-preview img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.photo-picker-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+.photo-picker-actions .btn {
+  padding: 8px 12px;
+  font-size: 0.82rem;
+}
+.photo-upload-label {
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+.photo-upload-label input[type="file"] {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+  width: 100%;
+}
+
+/* =============================================================
+   Places — memory checklist (multi-select) in the add/edit modal
+============================================= */
+.memory-checklist {
+  max-height: 160px;
+  overflow-y: auto;
+  border: 1px solid rgba(122, 46, 66, 0.2);
+  border-radius: 10px;
+  padding: 6px 10px;
+}
+.checklist-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+.checklist-item input { width: auto; margin: 0; }

@@ -54,8 +54,17 @@
       </div>
 
       <div class="field">
-        <label for="giftPhoto">Photo</label>
-        <input type="file" id="giftPhoto" accept="image/*">
+        <label>Photo</label>
+        <div class="photo-picker-row">
+          <div class="photo-picker-preview" id="giftPhotoPreview"></div>
+          <div class="photo-picker-actions">
+            <button type="button" class="btn btn-secondary" id="giftChooseExisting">Choose from gallery</button>
+            <label class="btn btn-secondary photo-upload-label">Upload new
+              <input type="file" id="giftPhoto" accept="image/*">
+            </label>
+          </div>
+        </div>
+        <input type="hidden" id="giftMediaId">
         <p class="form-note" id="giftPhotoNote" style="display:none; text-align:left;">Leave blank to keep the current photo.</p>
       </div>
 
@@ -70,6 +79,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="../js/nav.js"></script>
   <script src="../js/supabase-client.js"></script>
+  <script src="../js/media-picker.js"></script>
   <script src="../js/gifts.js"></script>
 </body>
 </html>
