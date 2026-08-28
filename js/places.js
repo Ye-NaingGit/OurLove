@@ -36,7 +36,7 @@ let markersById = new Map();
 function heartDivIcon() {
   return L.divIcon({
     className: 'heart-pin',
-    html: `<svg viewBox="0 0 24 24" width="30" height="30" style="filter:drop-shadow(0 3px 4px rgba(0,0,0,0.4))"><path fill="#E8637A" d="M12 21s-7.5-4.6-10.2-9.2C.3 9.1 1 5.6 4 4.2 6.4 3 9 4 12 7 15-4 17.6 3 19.6 4.2c3 1.4 3.7 4.9 2.2 7.6C19.5 16.4 12 21 12 21z"/></svg>`,
+    html: `<svg viewBox="0 0 24 24" width="30" height="30" style="filter:drop-shadow(0 3px 4px rgba(0,0,0,0.4))"><path fill="#E8637A" d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>`,
     iconSize: [30, 30],
     iconAnchor: [15, 28],
     popupAnchor: [0, -26],
