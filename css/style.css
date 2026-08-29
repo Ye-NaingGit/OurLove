@@ -1501,6 +1501,12 @@ body {
     border-radius: 0;
     box-shadow: none;
   }
+  /* perspective (used for the desktop 3D lid-flip) creates a new
+     containing block for any position:fixed descendant — meaning the
+     "fixed" overlay below was actually anchoring itself to this tiny
+     tile instead of the real viewport. Removing it here is what makes
+     the overlay actually center on the screen. */
+  .gift-box { perspective: none; }
   .gift-lid {
     height: auto;
     aspect-ratio: 1;
