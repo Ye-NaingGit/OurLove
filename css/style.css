@@ -840,13 +840,11 @@ body {
   color: var(--rose-mid);
   margin: 0;
 }
-.gift-box.is-open .gift-lid,
-.gift-box:hover .gift-lid {
+.gift-box.is-open .gift-lid {
   transform: rotateX(-25deg);
   height: 200px;
 }
-.gift-box.is-open .gift-lid img,
-.gift-box:hover .gift-lid img { height: 200px; }
+.gift-box.is-open .gift-lid img { height: 200px; }
 .gift-details {
   max-height: 0;
   overflow: hidden;
@@ -854,10 +852,25 @@ body {
   text-align: left;
   padding: 0 14px;
 }
-.gift-box.is-open .gift-details,
-.gift-box:hover .gift-details {
+.gift-box.is-open .gift-details {
   max-height: 200px;
   padding: 4px 14px 16px;
+}
+/* Hover-to-peek is a mouse-only nicety — gated behind (hover: hover) so
+   touchscreens never register :hover here at all. Without this, tapping
+   a gift box on mobile made the browser treat the first tap as hover
+   simulation instead of a real click, so .is-open only toggled (and the
+   box only actually opened) on the second tap. */
+@media (hover: hover) and (pointer: fine) {
+  .gift-box:hover .gift-lid {
+    transform: rotateX(-25deg);
+    height: 200px;
+  }
+  .gift-box:hover .gift-lid img { height: 200px; }
+  .gift-box:hover .gift-details {
+    max-height: 200px;
+    padding: 4px 14px 16px;
+  }
 }
 /* Hidden on desktop (name/date already show in .gift-body there);
    the mobile block above turns this back on inside the tap overlay. */

@@ -190,6 +190,13 @@ form.addEventListener('submit', async (e) => {
         mediaId = chosenMediaId;
       }
 
+      // Keep the photo's own gallery date in sync with this gift's date —
+      // see the matching comment in memories.js for why mediaId already
+      // covers every case where there's a linked photo to sync.
+      if (mediaId !== undefined) {
+        await db.from('media').update({ date }).eq('id', mediaId);
+      }
+
       const payload = { name, date, message, given_by: givenBy };
       if (mediaId !== undefined) payload.media_id = mediaId;
 

@@ -339,6 +339,16 @@ form.addEventListener('submit', async (e) => {
         mediaId = chosenMediaId;
       }
 
+      // Keep the photo's own gallery date in sync with this memory's date,
+      // so it doesn't have to be set separately on the Gallery page too.
+      // mediaId is set here in every case where there's a linked photo to
+      // sync — new upload, a gallery pick, or an unchanged existing link
+      // (chosenMediaId still holds it) — and stays undefined only when
+      // there's no photo at all.
+      if (mediaId !== undefined) {
+        await db.from('media').update({ date }).eq('id', mediaId);
+      }
+
       let locationId = undefined; // undefined = don't touch existing location_id
       if (location) {
         const { data: existingPlace } = await db.from('places').select('id').eq('name', location).maybeSingle();
