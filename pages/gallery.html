@@ -43,6 +43,37 @@
     <button type="button" class="btn btn-danger" id="confirmDeleteSelection">Delete</button>
   </div>
 
+  <!-- Tapping a photo (outside delete-select mode) opens this to edit its info -->
+  <div class="modal-backdrop" id="editMediaBackdrop">
+    <form class="modal" id="editMediaForm">
+      <h2>Edit photo</h2>
+      <input type="hidden" id="editMediaId">
+
+      <div class="photo-picker-preview" id="editMediaPreview" style="width:100%; height:160px; margin-bottom:16px;"></div>
+
+      <div class="field">
+        <label for="editMediaTitle">Title (optional)</label>
+        <input type="text" id="editMediaTitle" placeholder="e.g. First Anniversary">
+      </div>
+
+      <div class="field">
+        <label for="editMediaDate">Date</label>
+        <input type="date" id="editMediaDate">
+      </div>
+
+      <div class="field">
+        <label for="editMediaReplace">Replace photo (optional)</label>
+        <input type="file" id="editMediaReplace" accept="image/*">
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" id="cancelEditMedia">Cancel</button>
+        <button type="button" class="btn btn-danger" id="deleteMediaBtn">Delete</button>
+        <button type="submit" class="btn btn-primary">Save</button>
+      </div>
+    </form>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="../js/nav.js"></script>
   <script src="../js/supabase-client.js"></script>

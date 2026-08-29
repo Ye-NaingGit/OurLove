@@ -207,3 +207,12 @@ alter table settings enable row level security;
 create policy "public read/write - settings" on settings for all using (true) with check (true);
 
 insert into settings (id) values (true);
+
+
+-- ============================================================
+-- MIGRATION 3 — added for the Gallery's new "edit media" feature
+-- (a date field, plus editing a photo's title/date after upload).
+--
+-- Run just this block in the SQL Editor.
+-- ============================================================
+alter table media add column if not exists date date;

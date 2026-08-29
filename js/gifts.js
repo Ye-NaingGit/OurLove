@@ -51,6 +51,10 @@ function renderGifts(gifts) {
               ${g.date ? `<p class="gift-date">${formatDate(g.date)}</p>` : ''}
             </div>
             <div class="gift-details">
+              <div class="gift-details-heading">
+                <p class="gift-name">${g.name}</p>
+                ${g.date ? `<p class="gift-date">${formatDate(g.date)}</p>` : ''}
+              </div>
               ${g.message ? `<p class="gift-message">&ldquo;${g.message}&rdquo;</p>` : ''}
               ${g.given_by ? `<p class="gift-by">From ${g.given_by}</p>` : ''}
               <div class="gift-actions">

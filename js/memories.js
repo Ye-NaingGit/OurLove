@@ -139,6 +139,7 @@ function renderTimeline(memories) {
     const toggle = () => {
       const isOpen = card.classList.toggle('is-open');
       card.setAttribute('aria-expanded', String(isOpen));
+      setTimeout(updateMobileConnector, 320); // after the expand/collapse transition
     };
     card.addEventListener('click', (e) => {
       // Ignore clicks that landed on Edit/Delete — those have their own handlers.
@@ -167,7 +168,67 @@ function renderTimeline(memories) {
       deleteMemory(btn.dataset.id);
     });
   });
+
+  updateMobileConnector();
 }
+
+// ---- Mobile: connecting curve between cards -------------------------------
+// On narrow screens the timeline drops its central spine (see the
+// max-width: 720px block in style.css) and instead draws one meandering
+// line through the actual rendered card positions, computed here rather
+// than hand-drawn, so it stays correct for any number of memories.
+function updateMobileConnector() {
+  const existing = document.getElementById('mobileTimelineSvg');
+
+  const isMobile = window.matchMedia('(max-width: 720px)').matches;
+  const cards = Array.from(timelineRoot.querySelectorAll('.memory-card'));
+
+  if (!isMobile || cards.length < 2) {
+    if (existing) existing.remove();
+    return;
+  }
+
+  const rootRect = timelineRoot.getBoundingClientRect();
+  const points = cards.map((card) => {
+    const r = card.getBoundingClientRect();
+    return {
+      x: r.left + r.width / 2 - rootRect.left,
+      y: r.top + r.height / 2 - rootRect.top,
+    };
+  });
+
+  // A cubic bezier between each pair of points, with both control points
+  // pinned to the vertical midpoint — this naturally produces a gentle
+  // S-curve wherever consecutive cards sit on alternating sides.
+  let d = `M ${points[0].x} ${points[0].y}`;
+  for (let i = 1; i < points.length; i++) {
+    const p0 = points[i - 1];
+    const p1 = points[i];
+    const midY = (p0.y + p1.y) / 2;
+    d += ` C ${p0.x} ${midY}, ${p1.x} ${midY}, ${p1.x} ${p1.y}`;
+  }
+
+  let svg = existing;
+  if (!svg) {
+    svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('id', 'mobileTimelineSvg');
+    svg.setAttribute('class', 'mobile-timeline-svg');
+    timelineRoot.prepend(svg);
+  }
+  svg.setAttribute('width', rootRect.width);
+  svg.setAttribute('height', rootRect.height);
+  svg.setAttribute('viewBox', `0 0 ${rootRect.width} ${rootRect.height}`);
+  svg.innerHTML = `<path d="${d}"></path>`;
+}
+
+// Recompute on resize (debounced) — both because the curve's pixel
+// positions change, and because crossing the 720px breakpoint should
+// add/remove it entirely.
+let mobileConnectorResizeTimer;
+window.addEventListener('resize', () => {
+  clearTimeout(mobileConnectorResizeTimer);
+  mobileConnectorResizeTimer = setTimeout(updateMobileConnector, 200);
+});
 
 async function init() {
   const memories = await loadTable('memories', demoMemories, {

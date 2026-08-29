@@ -1,34 +1,46 @@
 /* ============================================================
    gallery.js
    Renders every item in the `media` table as a grid, grouped by
-   year, and handles both uploading new media and a "select
-   several, delete them all" mode.
+   year, and handles uploading, editing (title/date/photo), and a
+   "select several, delete them all" mode.
+
+   Grouping/sorting uses each item's `date` (when you've set one)
+   and falls back to `created_at` (always set, from upload time)
+   otherwise — so older photos without a manually-set date still
+   sort sensibly.
 ============================================================ */
 
 // ---- Demo data ------------------------------------------------------
 const demoMedia = [
-  { id: 'demo-1', title: 'Our Rings', url: 'https://placehold.co/400x300/e8b4c0/4a1f2b?text=Our+Rings', created_at: '2026-07-24' },
-  { id: 'demo-2', title: 'First Anniversary', url: 'https://placehold.co/400x300/e8b4c0/4a1f2b?text=First+Anniversary', created_at: '2026-06-06' },
-  { id: 'demo-3', title: null, url: 'https://placehold.co/400x300/e8b4c0/4a1f2b?text=Us', created_at: '2026-03-15' },
-  { id: 'demo-4', title: null, url: 'https://placehold.co/400x300/e8b4c0/4a1f2b?text=Us', created_at: '2025-12-31' },
-  { id: 'demo-5', title: null, url: 'https://placehold.co/400x300/e8b4c0/4a1f2b?text=Us', created_at: '2025-09-10' },
+  { id: 'demo-1', title: 'Our Rings', url: 'https://placehold.co/400x300/e8b4c0/4a1f2b?text=Our+Rings', date: '2026-07-24', created_at: '2026-07-24' },
+  { id: 'demo-2', title: 'First Anniversary', url: 'https://placehold.co/400x300/e8b4c0/4a1f2b?text=First+Anniversary', date: '2026-06-06', created_at: '2026-06-06' },
+  { id: 'demo-3', title: null, url: 'https://placehold.co/400x300/e8b4c0/4a1f2b?text=Us', date: null, created_at: '2026-03-15' },
+  { id: 'demo-4', title: null, url: 'https://placehold.co/400x300/e8b4c0/4a1f2b?text=Us', date: null, created_at: '2025-12-31' },
+  { id: 'demo-5', title: null, url: 'https://placehold.co/400x300/e8b4c0/4a1f2b?text=Us', date: null, created_at: '2025-09-10' },
 ];
 
 const galleryRoot = document.getElementById('galleryRoot');
 
 let deleteMode = false;
 let selectedIds = new Set();
+let currentMedia = [];
+
+function effectiveDate(m) {
+  return m.date || m.created_at;
+}
 
 function renderGallery(items) {
+  currentMedia = items;
+
   if (!items.length) {
     galleryRoot.innerHTML = '<p class="empty-state">No photos yet — add your first with the + button.</p>';
     return;
   }
 
-  const sorted = [...items].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+  const sorted = [...items].sort((a, b) => new Date(effectiveDate(b)) - new Date(effectiveDate(a)));
   const byYear = new Map();
   sorted.forEach((m) => {
-    const year = new Date(m.created_at).getFullYear();
+    const year = new Date(effectiveDate(m)).getFullYear();
     if (!byYear.has(year)) byYear.set(year, []);
     byYear.get(year).push(m);
   });
@@ -53,11 +65,15 @@ function renderGallery(items) {
 
   galleryRoot.querySelectorAll('.gallery-item').forEach((item) => {
     item.addEventListener('click', () => {
-      if (!deleteMode) return;
       const id = item.dataset.id;
-      if (selectedIds.has(id)) selectedIds.delete(id); else selectedIds.add(id);
-      item.classList.toggle('is-selected');
-      updateSelectionBar();
+      if (deleteMode) {
+        if (selectedIds.has(id)) selectedIds.delete(id); else selectedIds.add(id);
+        item.classList.toggle('is-selected');
+        updateSelectionBar();
+      } else {
+        const media = currentMedia.find((m) => m.id === id);
+        if (media) openEditMediaModal(media);
+      }
     });
   });
 }
@@ -96,6 +112,7 @@ uploadInput.addEventListener('change', async () => {
       demoMedia.push({
         id: 'local-' + Date.now() + Math.random(),
         title: null,
+        date: null,
         url: URL.createObjectURL(file),
         created_at: new Date().toISOString(),
       });
@@ -103,6 +120,95 @@ uploadInput.addEventListener('change', async () => {
   }
 
   uploadInput.value = '';
+  init();
+});
+
+// ---- Edit media (title / date / replace photo) ------------------------------------------------
+const editBackdrop = document.getElementById('editMediaBackdrop');
+const editForm = document.getElementById('editMediaForm');
+const editPreview = document.getElementById('editMediaPreview');
+const cancelEditBtn = document.getElementById('cancelEditMedia');
+const deleteMediaBtn = document.getElementById('deleteMediaBtn');
+
+function openEditMediaModal(media) {
+  document.getElementById('editMediaId').value = media.id;
+  document.getElementById('editMediaTitle').value = media.title || '';
+  document.getElementById('editMediaDate').value = media.date || '';
+  document.getElementById('editMediaReplace').value = '';
+  editPreview.innerHTML = `<img src="${media.url}" alt="">`;
+  editBackdrop.classList.add('is-open');
+}
+
+cancelEditBtn.addEventListener('click', () => editBackdrop.classList.remove('is-open'));
+editBackdrop.addEventListener('click', (e) => { if (e.target === editBackdrop) editBackdrop.classList.remove('is-open'); });
+
+document.getElementById('editMediaReplace').addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (file) editPreview.innerHTML = `<img src="${URL.createObjectURL(file)}" alt="">`;
+});
+
+editForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  const id = document.getElementById('editMediaId').value;
+  const title = document.getElementById('editMediaTitle').value.trim() || null;
+  const date = document.getElementById('editMediaDate').value || null;
+  const replaceFile = document.getElementById('editMediaReplace').files[0];
+
+  if (db) {
+    try {
+      const payload = { title, date };
+      if (replaceFile) {
+        const path = `gallery/${Date.now()}-${replaceFile.name}`;
+        const { error: uploadError } = await db.storage.from('media').upload(path, replaceFile);
+        if (uploadError) throw uploadError;
+        const { data: publicUrlData } = db.storage.from('media').getPublicUrl(path);
+        payload.url = publicUrlData.publicUrl;
+      }
+      const { error } = await db.from('media').update(payload).eq('id', id);
+      if (error) throw error;
+    } catch (err) {
+      alert('Could not save: ' + err.message);
+      return;
+    }
+  } else {
+    const media = demoMedia.find((m) => m.id === id);
+    if (media) {
+      media.title = title;
+      media.date = date;
+      if (replaceFile) media.url = URL.createObjectURL(replaceFile);
+    }
+  }
+
+  editBackdrop.classList.remove('is-open');
+  init();
+});
+
+deleteMediaBtn.addEventListener('click', async () => {
+  const id = document.getElementById('editMediaId').value;
+  if (!confirm('Delete this photo? This cannot be undone.')) return;
+
+  if (db) {
+    try {
+      const { data: row } = await db.from('media').select('url').eq('id', id).single();
+      const { error } = await db.from('media').delete().eq('id', id);
+      if (error) throw error;
+
+      if (row?.url) {
+        const marker = '/object/public/media/';
+        const idx = row.url.indexOf(marker);
+        if (idx !== -1) await db.storage.from('media').remove([row.url.slice(idx + marker.length)]);
+      }
+    } catch (err) {
+      alert('Could not delete: ' + err.message);
+      return;
+    }
+  } else {
+    const idx = demoMedia.findIndex((m) => m.id === id);
+    if (idx !== -1) demoMedia.splice(idx, 1);
+  }
+
+  editBackdrop.classList.remove('is-open');
   init();
 });
 

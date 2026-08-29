@@ -686,8 +686,11 @@ body {
   flex-shrink: 0;
 }
 
-/* Below this width the branching layout stops making sense (not enough
-   room either side of the spine), so collapse to a single-column list. */
+/* Below this width there's no room either side of a central spine for
+   the desktop layout's dot+connector+card math, so mobile keeps the
+   alternating left/right arrangement but drops the spine itself — a
+   single meandering line (drawn by memories.js, computed from the
+   actual rendered card positions) connects the cards instead. */
 @media (max-width: 720px) {
   #timelineRoot::before { display: none; }
   .timeline-row::before { display: none; }
@@ -695,13 +698,30 @@ body {
   .timeline-row.align-left,
   .timeline-row.align-right {
     flex-direction: column;
-    align-items: flex-start;
-    padding-left: 0;
-    padding-right: 0;
-    gap: 8px;
+    padding: 0 6% !important;
+    min-height: auto;
+    margin-bottom: 46px;
   }
+  .timeline-row.align-right { align-items: flex-end; }
+  .timeline-row.align-left { align-items: flex-start; }
   .timeline-date::after, .timeline-date::before { display: none; }
-  .memory-card { width: 100%; max-width: 260px; }
+  .timeline-date { order: -1; margin-bottom: 6px; padding: 0; }
+  .memory-card { width: 46vw; max-width: 200px; }
+
+  /* The connecting curve itself — see updateMobileConnector() in
+     memories.js. Sits behind the cards/years (which have their own
+     z-index already) without needing one of its own. */
+  .mobile-timeline-svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+  .mobile-timeline-svg path {
+    fill: none;
+    stroke: rgba(122, 46, 66, 0.4);
+    stroke-width: 2;
+    stroke-linecap: round;
+  }
 }
 
 /* =============================================================
@@ -839,6 +859,12 @@ body {
   max-height: 200px;
   padding: 4px 14px 16px;
 }
+/* Hidden on desktop (name/date already show in .gift-body there);
+   the mobile block above turns this back on inside the tap overlay. */
+.gift-details-heading { display: none; }
+.gift-details-heading .gift-name { font-weight: 700; color: var(--rose-deep); margin: 0 0 2px; }
+.gift-details-heading .gift-date { font-size: 0.82rem; color: var(--rose-mid); margin: 0 0 10px; }
+
 .gift-details .gift-message {
   font-family: var(--font-display);
   font-style: italic;
@@ -1426,3 +1452,116 @@ body {
   cursor: pointer;
 }
 .checklist-item input { width: auto; margin: 0; }
+
+/* =============================================================
+   Mobile: Gallery and Gifts both become a plain edge-to-edge
+   square-photo grid, like a phone's native gallery app, instead
+   of the desktop's captioned cards / opening present boxes.
+============================================= */
+@media (max-width: 720px) {
+  /* --- Gallery --- */
+  .gallery-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+  }
+  .gallery-item {
+    border-radius: 0;
+    padding: 0;
+    box-shadow: none;
+    background: none;
+    aspect-ratio: 1;
+  }
+  .gallery-item img {
+    height: 100%;
+    border-radius: 0;
+  }
+  .gallery-item .gallery-caption { display: none; }
+
+  /* --- Gifts: same square-grid treatment; tapping a tile still opens
+     its details, just as a centered overlay card instead of the
+     lid-flip animation (which needs more room than a phone has). --- */
+  .gifts-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+  }
+  .gift-box-inner {
+    border-radius: 0;
+    box-shadow: none;
+  }
+  .gift-lid {
+    height: auto;
+    aspect-ratio: 1;
+    transform: none !important; /* disable the desktop hover/open flip */
+  }
+  .gift-lid img {
+    height: 100% !important;
+    aspect-ratio: 1;
+  }
+  .gift-body { display: none; } /* name/date shown in the overlay instead, not under the tile */
+
+  /* Tapping open promotes the details into a centered overlay card,
+     since there's no room to expand a tile in place within a tight grid. */
+  .gift-box.is-open::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: rgba(74, 20, 33, 0.55);
+    z-index: 49;
+  }
+  .gift-box.is-open .gift-details {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    max-height: 70vh;
+    width: 82vw;
+    max-width: 340px;
+    background: var(--cream);
+    border-radius: 18px;
+    padding: 18px 18px 20px;
+    box-shadow: 0 24px 60px rgba(74, 20, 33, 0.5);
+    z-index: 50;
+    overflow-y: auto;
+  }
+  /* Name/date are normally shown under the closed thumbnail (.gift-body,
+     hidden above in the mobile grid) — this mirrors them inside the
+     overlay instead, so they're not lost when .gift-body is hidden.
+     Hidden by default; only shown here where .gift-body is unavailable. */
+  .gift-details-heading { display: block !important; }
+}
+
+/* =============================================================
+   Mobile: Us page — scale both profile cards down so they still
+   sit side by side instead of stacking (nowrap forces this; the
+   flex-basis shrink is what makes them actually fit).
+============================================= */
+@media (max-width: 600px) {
+  .profiles {
+    flex-wrap: nowrap;
+    gap: 10px;
+    align-items: stretch;
+  }
+  .profile-card {
+    width: auto;
+    flex: 1 1 0;
+    min-width: 0; /* lets flex items shrink below their content's natural width */
+    padding: 18px 12px;
+  }
+  .profile-avatar {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 12px;
+  }
+  .profile-card h2 {
+    font-size: 1rem;
+    margin: 0 0 12px;
+  }
+  .profile-facts p {
+    font-size: 0.76rem;
+    margin: 0 0 6px;
+  }
+  .profile-heart {
+    font-size: 1.2rem;
+    flex-shrink: 0;
+  }
+}
