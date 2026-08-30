@@ -12,6 +12,7 @@
   --nav-color-deep: #A94764; /* nav open/hover state */
   --cream:        #FBF0EC;   /* light text, used on dark/colored surfaces */
   --cream-dim:    #F1DCE1;   /* secondary light text, used on dark/colored surfaces */
+  --black:         #000000;
   --plum-shadow:  rgba(74, 20, 33, 0.35);
 
   --font-display: 'Playfair Display', Georgia, serif;
@@ -1076,7 +1077,7 @@ body {
   font-size: 1.4rem;
   text-decoration: underline;
   margin: 0 0 22px;
-  color: var(--cream);
+  color: var(--black);
 }
 .love-notes-body {
   display: flex;
@@ -1088,7 +1089,7 @@ body {
 .love-note-arrow {
   background: none;
   border: none;
-  color: var(--cream);
+  color: var(--black);
   cursor: pointer;
   padding: 6px;
   flex-shrink: 0;
@@ -1102,7 +1103,7 @@ body {
   font-weight: 700;
   font-size: 1.1rem;
   margin: 0 0 8px;
-  color: var(--cream);
+  color: var(--black);
 }
 .love-note-content .love-note-text {
   font-family: var(--font-display);
@@ -1110,7 +1111,7 @@ body {
   font-size: 1.1rem;
   line-height: 1.5;
   margin: 0;
-  color: var(--cream);
+  color: var(--black);
 }
 
 /* =============================================================
