@@ -1065,7 +1065,7 @@ body {
 .love-notes {
   max-width: 460px;
   margin: 0 auto;
-  background: rgba(122, 46, 66, 0.12);
+  background: rgba(255, 0, 68, 0.12);
   border: 2px solid var(--rose-deep);
   border-radius: 22px;
   padding: 34px 30px;
